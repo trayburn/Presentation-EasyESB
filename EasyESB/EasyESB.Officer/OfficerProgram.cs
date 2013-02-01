@@ -26,6 +26,7 @@ namespace EasyESB.Officer
 
                 b.Subscribe(x =>
                 {
+                    x.Consumer<OffTheWallRequest>();
                     x.Saga(new InMemorySagaRepository<OfficerSaga>())
                         .Permanent();
                 });
@@ -39,12 +40,12 @@ namespace EasyESB.Officer
                 {
                     Console.WriteLine("Officer > Please add this to case {0}", index);
 
-                    bus.Publish(new AddEvidenceToLockup
-                    {
-                        CaseNumber = index,
-                        Evidence = "Yet another cell phone",
-                        CorrelationId = CombGuid.Generate()
-                    });
+                    //bus.Publish(new AddEvidenceToLockup
+                    //{
+                    //    CaseNumber = index,
+                    //    Evidence = "Yet another cell phone",
+                    //    CorrelationId = CombGuid.Generate()
+                    //});
 
                     //bus.PublishRequest(new AddEvidenceToLockup
                     //{
@@ -57,12 +58,12 @@ namespace EasyESB.Officer
                     //    x.HandleTimeout(5.Seconds(), om => Console.WriteLine("Nevermind, I'm out."));
                     //});
 
-                    //bus.Publish(new SubmitEvidence()
-                    //{
-                    //    CaseNumber = index,
-                    //    Evidence = "Yet another cell phone",
-                    //    CorrelationId = CombGuid.Generate()
-                    //});
+                    bus.Publish(new SubmitEvidence()
+                    {
+                        CaseNumber = index,
+                        Evidence = "Yet another cell phone",
+                        CorrelationId = CombGuid.Generate()
+                    });
 
                 }
 
@@ -71,4 +72,19 @@ namespace EasyESB.Officer
             }
         }
     }
+
+    public class OffTheWallRequest : Consumes<AddEvidenceToLockup>.Selected
+    {
+
+        public bool Accept(AddEvidenceToLockup message)
+        {
+            return message.CaseNumber == 4;
+        }
+
+        public void Consume(AddEvidenceToLockup message)
+        {
+            Console.WriteLine("LURKER > WooHoo! New Evidence!");
+        }
+    }
+
 }

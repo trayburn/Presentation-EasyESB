@@ -22,7 +22,7 @@ namespace EasyESB.Lockup
 
                 b.Subscribe(c =>
                 {
-                    c.Consumer<Clerk1Slow>();
+                    c.Consumer<Clerk4Proveable>();
                 });
             });
             using (bus)
@@ -32,4 +32,5 @@ namespace EasyESB.Lockup
             }
         }
     }
+
 }
